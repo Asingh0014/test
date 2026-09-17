@@ -1,39 +1,39 @@
-AP Group,APs Offline
-Default AV,0
-TC-200V,1
-TC-200V-LBS,0
-TC-252 Lygon,0
-TC-29 Royal Parade,0
-TC-35 Royal Parade,0
-TC-Behan,0
-TC-Bishops,0
-TC-Bouverie Street,0
-TC-Chapel,0
-TC-Clarke,0
-TC-Cowan,0
-TC-Deanery,0
-TC-Dining Hall,1
-TC-Dorothy Basement,0
-TC-Dorothy External,0
-TC-Dorothy Ground Floor,0
-TC-Dorothy L1,0
-TC-Dorothy L1 IoT,0
-TC-Dorothy L2,0
-TC-Dorothy L2 IoT,0
-TC-Dorothy L3,0
-TC-Dorothy L3 IoT,1
-TC-Dorothy L4,0
-TC-Dorothy L4 IoT,0
-TC-Evan Burge,3
-TC-Evan Burge LBS,0
-TC-Gateway,0
-TC-Gateway-LBS,0
-TC-Gourlay,1
-TC-Jeopardy,0
-TC-Kitchen,0
-TC-Leeper,1
-TC-OWL,0
-TC-Sharwood Room,0
-TC-Summer House,0
-Trinity,0
-default,2
+AP Group
+Default AV
+TC-200V
+TC-200V-LBS
+TC-252 Lygon
+TC-29 Royal Parade
+TC-35 Royal Parade
+TC-Behan
+TC-Bishops
+TC-Bouverie Street
+TC-Chapel
+TC-Clarke
+TC-Cowan
+TC-Deanery
+TC-Dining Hall
+TC-Dorothy Basement
+TC-Dorothy External
+TC-Dorothy Ground Floor
+TC-Dorothy L1
+TC-Dorothy L1 IoT
+TC-Dorothy L2
+TC-Dorothy L2 IoT
+TC-Dorothy L3
+TC-Dorothy L3 IoT
+TC-Dorothy L4
+TC-Dorothy L4 IoT
+TC-Evan Burge
+TC-Evan Burge LBS
+TC-Gateway
+TC-Gateway-LBS
+TC-Gourlay
+TC-Jeopardy
+TC-Kitchen
+TC-Leeper
+TC-OWL
+TC-Sharwood Room
+TC-Summer House
+Trinity
+default
