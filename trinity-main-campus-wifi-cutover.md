@@ -18,20 +18,36 @@
 
 ### Summary
 
-This cutover is a **network segmentation migration**: moving WiFi client
-traffic off the flat legacy VLAN (22) onto new segmented VLANs (2300, 2900,
-etc.) per SSID/user-group, following successful piloting via the
-`Trinity NetSegPilot` / `*2300` / `*2900` duplicate SSID profiles already
-present in the controller. `[Confirm: is the intent to cut production SSIDs
-over to the pilot VLANs and retire the VLAN-22 profiles, or is this a
-broader controller/vendor migration as well?]`
+**Confirmed: this is a network segmentation project.** WiFi client traffic
+is moving off the flat legacy VLAN (22) onto segmented VLANs, following
+successful piloting via the `Trinity NetSegPilot` / `*2300` / `*2900`
+duplicate SSID profiles already present in the controller.
+
+**Decisions taken (no strong preference given, so defaulted to the
+lowest-risk / most-precedented option — override any of these anytime):**
+
+- **Target VLAN:** all VLAN‑22 SSIDs consolidate onto **VLAN 2300**, matching
+  the already-validated `Trinity NetSegPilot` and `Trinity Wireless 2300`
+  pilot profiles. No per-SSID VLAN split.
+- **VLAN 15 (`SimonWifi_RT380843`, `Trinity Cafe`, `Trinity Deanery`):**
+  **out of scope** — no pilot/segmented counterpart exists for VLAN 15, so
+  it is left untouched by this project.
+- **Rollout approach:** **phased/staged**, not a single big-bang window —
+  `Trinity Wireless` alone carries 622 live clients / 125.2 GB of traffic,
+  so migration proceeds by building/AP group (see Section 6) with
+  validation between stages rather than one campus-wide cutover.
 
 ### Scope
 
-- In scope: `[buildings / floors / AP count]` — all SSIDs currently
-  broadcasting on VLAN 22 that have a corresponding pilot/segmented profile
-  (see table below).
-- Out of scope: `[anything explicitly excluded — e.g. guest network, IoT VLAN, residence halls]`
+- **In scope:** all VLAN‑22 SSIDs — `Trinity Wireless` (incl. the
+  `- 802.11R` fast-roaming variant), `eduroam 2026`, `Trinity Visitor`,
+  `Trinity Staff`, `Trinity College`, `Trinity IT Test Wireless`,
+  `PSK Performance Testing` — migrating to VLAN 2300. Building/floor/AP
+  count: `[fill in]`.
+- **Out of scope:** VLAN 15 (`SimonWifi_RT380843`, `Trinity Cafe`,
+  `Trinity Deanery`) and `eduroam 2900` (already piloted separately on its
+  own target VLAN — confirm it stays on 2900 rather than moving to 2300:
+  `[confirm]`).
 
 ## 2. Current State — SSID Table (as of 2026-09-17)
 
@@ -70,22 +86,41 @@ broader controller/vendor migration as well?]`
   `eduroam 2900` with 2 clients — a small-scale pilot already in progress.
 - `Trinity Wireless - 802.11R` is a separate profile (802.11r fast roaming
   enabled) still same-named SSID `Trinity Wireless`, also on VLAN 22, with
-  20 clients — `[confirm whether 802.11r variant also needs a VLAN
-  2300 counterpart, or whether it gets merged into the main profile as
-  part of this cutover]`.
+  20 clients — **decision: migrates alongside the main `Trinity Wireless`
+  profile onto VLAN 2300, keeping 802.11r enabled** (no reason identified
+  to drop fast roaming as part of a VLAN change) — `[confirm]`.
 
-## 3. Current vs. Target State
+## 3. Target SSID → VLAN Mapping
+
+| Name | SSID | Current VLAN | Target VLAN | In scope? |
+|---|---|---|---|---|
+| PSK Performance Testing | Trinity_RT337220 | 22 | 2300 | Yes |
+| Trinity College | Trinity College | 22 | 2300 | Yes |
+| Trinity IT Test Wireless | Trinity IT Test Wireless | 22 | 2300 | Yes |
+| Trinity Staff | Trinity Staff | 22 | 2300 | Yes |
+| Trinity Visitor | Trinity Visitor | 22 | 2300 | Yes |
+| Trinity Wireless | Trinity Wireless | 22 | 2300 | Yes |
+| Trinity Wireless - 802.11R | Trinity Wireless | 22 | 2300 | Yes |
+| Trinity Wireless 2300 *(pilot)* | Trinity Wireless | 2300 | 2300 (becomes production) | Yes — pilot profile retired once main profile cut over |
+| Trinity NetSegPilot *(pilot)* | Trinity NetSegPilot | 2300 | — | Retire post-cutover (pilot served its purpose) — `[confirm]` |
+| eduroam 2026 | eduroam | 22 | 2300 | Yes |
+| eduroam 2900 *(pilot)* | eduroam | 2900 | 2900 (unchanged) | Out of scope — stays on existing pilot VLAN — `[confirm]` |
+| SimonWifi_RT380843 | SimonWifi_RT380843 | 15 | 15 (unchanged) | No — VLAN 15 out of scope |
+| Trinity Cafe | Trinity Cafe | 15 | 15 (unchanged) | No — VLAN 15 out of scope |
+| Trinity Deanery | Trinity Deanery | 15 | 15 (unchanged) | No — VLAN 15 out of scope |
+
+## 4. Current vs. Target State
 
 | Item | Current | Target |
 |---|---|---|
 | Controller / management platform | `[confirm — appears to be a single controller managing all profiles above]` | Same (no platform change identified) |
-| SSID(s) | `Trinity Wireless`, `eduroam`, `Trinity Visitor`, `Trinity Staff`, `Trinity College`, `Trinity IT Test Wireless` on VLAN 22 | Same SSID names, re-pointed to segmented VLANs (2300 / 2900 / other per group) |
-| Authentication | 802.1X (staff/students/college/eduroam), OPEN (visitor, cafe, deanery, test PSK) | `[unchanged unless cutover also changes auth — confirm]` |
-| VLAN / IP scheme | Flat: VLAN 22 (primary), VLAN 15 (cafe/deanery/misc) | Segmented: VLAN 2300 (primary pilot target), VLAN 2900 (eduroam pilot target), `[VLAN plan for Staff/College/Visitor if different from 2300]` |
-| AP hardware/firmware | `[model / version]` | `[unchanged unless AP refresh is part of this project]` |
-| DHCP / DNS | Scopes bound to VLAN 22 / 15 | New scopes required for VLAN 2300 / 2900 (and any other new segment) — `[confirm these exist and are sized correctly]` |
+| SSID(s) | `Trinity Wireless`, `eduroam`, `Trinity Visitor`, `Trinity Staff`, `Trinity College`, `Trinity IT Test Wireless`, `PSK Performance Testing` on VLAN 22 | Same SSID names, all re-pointed to VLAN 2300 |
+| Authentication | 802.1X (staff/students/college/eduroam), OPEN (visitor, test PSK) | Unchanged — segmentation only, no auth-method change |
+| VLAN / IP scheme | Flat: VLAN 22 (primary, in-scope SSIDs) | Segmented: VLAN 2300 (all in-scope SSIDs consolidate here) |
+| AP hardware/firmware | `[model / version]` | Unchanged — no AP refresh in this project |
+| DHCP / DNS | Scopes bound to VLAN 22 | VLAN 2300 scope already exists (pilot profiles are live on it) — `[confirm capacity is sized for ~700+ concurrent clients once production moves over, not just pilot-scale]` |
 
-## 3. Stakeholders & Communications
+## 5. Stakeholders & Communications
 
 | Role | Name | Responsibility |
 |---|---|---|
@@ -103,73 +138,81 @@ broader controller/vendor migration as well?]`
 - `[T-0, end]` — "Maintenance complete" notice + instructions for reconnecting to new SSID if applicable.
 - `[T+1 day]` — Follow-up notice if issues are still being triaged.
 
-## 4. Pre-Cutover Checklist
+## 6. Pre-Cutover Checklist
 
 - [ ] Site survey / AP placement confirmed for all affected areas
-- [ ] New controller/config fully built and validated in staging/lab
-- [ ] New SSID(s), VLANs, and DHCP scopes provisioned and tested
-- [ ] RADIUS/802.1X (if applicable) tested end-to-end with target auth method
-- [ ] Firmware on all APs updated to target version and verified
-- [ ] Switch ports / uplinks confirmed for correct VLAN tagging
-- [ ] Backup of current (legacy) controller configuration taken and stored
+- [ ] VLAN 2300 DHCP scope re-validated for full production scale (~700+
+      concurrent clients — currently only pilot-scale traffic), not just
+      pilot capacity
+- [ ] RADIUS/802.1X tested end-to-end against VLAN 2300 for each in-scope
+      SSID (Trinity Wireless, Staff, College, IT Test, eduroam)
+- [ ] Switch ports / uplinks confirmed for VLAN 2300 tagging on all
+      affected APs/zones
+- [ ] Backup of current controller configuration (all SSID profiles) taken
+      and stored
 - [ ] Rollback plan reviewed and confirmed with change owner
 - [ ] Change request approved by `[change advisory board / IT leadership]`
-- [ ] Comms sent per section 3
-- [ ] On-call/support staffing confirmed for cutover window
-- [ ] Test devices (laptop, phone) staged for post-cutover validation
+- [ ] Comms sent per Section 5
+- [ ] On-call/support staffing confirmed for each rollout stage
+- [ ] Test devices (laptop, phone, one per auth type — 802.1X and OPEN)
+      staged for post-migration validation per stage
 
-## 5. Cutover Steps
+## 7. Cutover Steps (Phased Rollout)
 
-> Execute in order. Each step should be checked off and timestamped during
-> the actual cutover; capture actual start/end times for the post-cutover
-> report.
+> Migrate by building/AP group, not all at once — `Trinity Wireless` alone
+> has 622 live clients. Complete and validate each stage before starting
+> the next. Timestamp each step during execution.
 
 1. **Freeze changes** — confirm no other network changes are in flight for the campus.
-2. **Snapshot legacy config** — export/backup current controller and AP configuration.
-3. **Notify support desk** — cutover window has started; escalation contact is `[name/number]`.
-4. **Begin phased AP migration** (adjust to actual topology):
-   - Building/zone `[A]`: apply new config / move to new controller, verify APs online.
-   - Building/zone `[B]`: repeat.
-   - Building/zone `[C]`: repeat.
-5. **Cut over SSID broadcast** — disable legacy SSID broadcast, confirm target SSID(s) broadcasting correctly.
-6. **Validate connectivity** per zone:
-   - [ ] AP adoption/online status confirmed in new controller
-   - [ ] Client can associate to new SSID
-   - [ ] Client receives correct DHCP lease / VLAN
-   - [ ] Authentication succeeds (PSK or 802.1X as applicable)
+2. **Snapshot config** — export/backup current SSID profiles (VLAN 22 and 2300 pilot profiles).
+3. **Notify support desk** — stage 1 window has started; escalation contact is `[name/number]`.
+4. **Stage rollout by building/AP group** — order and grouping: `[fill in, e.g. lowest-traffic building first, Deanery last]`:
+   - Stage 1 — Building/zone `[A]` (start with a low-traffic/low-risk building, e.g. wherever `PSK Performance Testing` or `Trinity IT Test Wireless` already run): re-point APs to broadcast VLAN 2300 for all in-scope SSIDs.
+   - Stage 2 — Building/zone `[B]`: repeat.
+   - Stage 3 — Building/zone `[C]` (highest-traffic building last, once earlier stages are clean).
+5. **Retire the pilot-only profile** once its production counterpart is confirmed stable: merge or decommission `Trinity Wireless 2300` (pilot) in favor of the migrated `Trinity Wireless` profile, and retire `Trinity NetSegPilot` once its purpose is served — `[confirm timing]`.
+6. **Validate connectivity** per stage before proceeding to the next:
+   - [ ] AP(s) in this stage broadcasting VLAN 2300 correctly for all in-scope SSIDs
+   - [ ] Client can associate to each SSID (802.1X and OPEN types)
+   - [ ] Client receives VLAN 2300 DHCP lease
+   - [ ] Authentication succeeds (PSK / 802.1X as applicable)
    - [ ] Internet/internal resource access confirmed
-   - [ ] Roaming between APs within a zone verified (walk test)
-7. **Decommission legacy infrastructure** (only after validation passes) — power down/remove legacy controller or old SSID broadcast entirely.
-8. **Close out change window** — notify stakeholders, update status page to "complete."
+   - [ ] Roaming between APs within the stage verified (walk test), including 802.11r on `Trinity Wireless`
+   - [ ] No unexpected drop in client/traffic counts vs. pre-migration baseline for this zone
+7. **Repeat steps 4–6** for each remaining stage.
+8. **Decommission VLAN 22 broadcast** for in-scope SSIDs only after all stages pass validation.
+9. **Close out change window** — notify stakeholders, update status page to "complete."
 
-## 6. Validation / Acceptance Criteria
+## 8. Validation / Acceptance Criteria
 
-- [ ] 100% of in-scope APs online and adopted by target controller
+- [ ] All in-scope SSIDs broadcasting on VLAN 2300 campus-wide, VLAN 22 profile retired for those SSIDs
+- [ ] `Trinity Wireless` client count on VLAN 2300 recovers to ~pre-cutover baseline (622 clients) after full rollout
 - [ ] No coverage gaps vs. pre-cutover baseline (spot-check walk test per building)
 - [ ] Client authentication success rate at or above `[baseline %]`
-- [ ] Helpdesk ticket volume related to WiFi returns to baseline within `[X hours]`
-- [ ] No critical alerts from monitoring/NMS for `[X hours]` post-cutover
+- [ ] Helpdesk ticket volume related to WiFi returns to baseline within `[X hours]` per stage
+- [ ] No critical alerts from monitoring/NMS for `[X hours]` post-cutover per stage
+- [ ] VLAN 15 and `eduroam 2900` unaffected throughout (out of scope — spot-check no regression)
 
-## 7. Rollback Plan
+## 9. Rollback Plan
 
-**Rollback trigger:** `[e.g. >X% of APs fail to adopt, widespread auth failures, no connectivity in a critical building after Y minutes]`
+**Rollback trigger (per stage):** `[e.g. auth failure rate above X%, no connectivity in the stage's building after Y minutes, DHCP scope exhaustion on VLAN 2300]`
 
-**Rollback steps:**
-1. Re-enable legacy SSID broadcast / re-point APs to legacy controller.
-2. Restore legacy controller configuration from backup (section 5, step 2).
-3. Verify legacy network restored to pre-cutover functionality.
-4. Notify stakeholders and support desk that rollback occurred.
-5. Schedule retrospective and reschedule cutover.
+**Rollback steps (per stage):**
+1. Re-point the affected building/AP group's SSIDs back to VLAN 22.
+2. Restore config from backup (Section 7, step 2) for that stage if needed.
+3. Verify VLAN 22 connectivity restored to pre-cutover functionality for that stage.
+4. Notify stakeholders and support desk that rollback occurred for that stage.
+5. Root-cause before re-attempting that stage; later stages pause until resolved.
 
-## 8. Post-Cutover
+## 10. Post-Cutover
 
-- [ ] Send "maintenance complete" comms (section 3)
-- [ ] Monitor helpdesk tickets and NMS alerts for `[24–48 hours]`
-- [ ] Decommission/archive legacy configuration and hardware per `[retention policy]`
-- [ ] Update network documentation / diagrams to reflect new state
+- [ ] Send "maintenance complete" comms (Section 5) once all stages finish
+- [ ] Monitor helpdesk tickets and NMS alerts for `[24–48 hours]` after the final stage
+- [ ] Decommission/archive retired VLAN‑22 SSID profiles and pilot profiles (`Trinity NetSegPilot`, `Trinity Wireless 2300`) per `[retention policy]`
+- [ ] Update network documentation / diagrams to reflect VLAN 2300 as production
 - [ ] Hold post-cutover review meeting; log lessons learned below
 
-## 9. Post-Cutover Review
+## 11. Post-Cutover Review
 
 | Item | Notes |
 |---|---|
