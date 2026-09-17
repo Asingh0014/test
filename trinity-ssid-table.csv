@@ -1,0 +1,15 @@
+Name,SSID,Auth Method,Encryption Method,Clients,Traffic,VLAN,Application Recognition,Tunneled,Status
+PSK Performance Testing,Trinity_RT337220,OPEN,WPA2/WPA3-M...,0,0,22,Disabled,APBridge,Active
+SimonWifi_RT380843,SimonWifi_RT380843,OPEN,WPA3,0,0,15,Disabled,APBridge,Active
+Trinity Cafe,Trinity Cafe,OPEN,WPA2/WPA3-M...,0,0,15,Disabled,APBridge,Active
+Trinity College,Trinity College,802.1X,WPA2,0,0,22,Disabled,APBridge,Active
+Trinity Deanery,Trinity Deanery,OPEN,WPA2/WPA3-M...,6,223.4MB,15,Disabled,APBridge,Active
+Trinity IT Test Wireless,Trinity IT Test Wireless,802.1X,WPA2,0,0,22,Disabled,APBridge,Active
+Trinity NetSegPilot,Trinity NetSegPilot,802.1X,WPA2,0,0,2300,Disabled,APBridge,Active
+Trinity Staff,Trinity Staff,802.1X,WPA2,0,0,22,Disabled,APBridge,Active
+Trinity Visitor,Trinity Visitor,OPEN,NONE,12,521.4MB,22,Disabled,APBridge,Active
+Trinity Wireless,Trinity Wireless,802.1X,WPA2,622,125.2GB,22,Disabled,APBridge,Active
+Trinity Wireless - 802.11R,Trinity Wireless,802.1X,WPA2,20,1.4GB,22,Disabled,APBridge,Active
+Trinity Wireless 2300,Trinity Wireless,802.1X,WPA2,0,0,2300,Disabled,APBridge,Active
+eduroam 2026,eduroam,802.1X,WPA2,69,8.8GB,22,Disabled,APBridge,Active
+eduroam 2900,eduroam,802.1X,WPA2,2,653.8KB,2900,Disabled,APBridge,Active
